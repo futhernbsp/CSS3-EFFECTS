@@ -1,0 +1,78 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>下雨效果</title>
+
+<style>
+body {
+	margin:0;
+}
+canvas {
+	background:#CFF09E;
+	display:block;
+}
+</style>
+</head>
+<body>
+<canvas id="c">抱歉，此浏览器不支持canvas</canvas>
+
+<script>
+(function(){
+	//定义
+	var c = document.getElementById("c"),
+			ctx = c.getContext("2d");
+	
+	//获取高宽
+	c.width = innerWidth;
+	c.height = innerHeight;
+	
+	//雨滴线条的相关变量
+	var lines = [],//保存雨滴信息
+			maxSpeed = 5,//最快速度
+			spacing = 5,//间距
+			xSpacing = 0,//水平间距?
+			//密集度，比如宽度1536/5约为307，也就是有307条线
+			n = innerWidth / spacing,
+			colors = ["#3B8686", "#79BD9A", "#A8DBA8", "#0B486B"],
+			i;
+	
+	for (i = 0; i < n; i++){
+		xSpacing += spacing;//从左向右依次画线，依次加5，仔细看最后还是有一条的
+		lines.push({//对象数组
+			x: xSpacing,//定位
+			y: Math.round(Math.random()*c.height),
+			width: 2,
+			height: Math.round(Math.random()*(innerHeight/10)),
+			speed: Math.random()*maxSpeed + 1,//0就不动了1-6//速度也是px
+			color: colors[Math.floor(Math.random() * colors.length)]
+		});
+	}
+	console.log(lines);
+	
+	
+	function draw(){//绘画
+		var i;
+		ctx.clearRect(0,0,c.width,c.height);
+		
+		for (i = 0; i < n; i++){
+			ctx.fillStyle = lines[i].color;
+			ctx.fillRect(lines[i].x, lines[i].y, lines[i].width, lines[i].height);
+			lines[i].y += lines[i].speed;//往下落-通过增加离上边的距离实现
+			
+			if (lines[i].y > c.height){
+				//当整条线走玩尾部时，
+				lines[i].y = 0 - lines[i].height;
+				//把保存在数组中线条的高度赋值为在画布的上方，绝妙！
+			}
+		}
+		//定时器！
+		requestAnimationFrame(draw);
+	}
+	
+	draw();//开始画
+	
+}());</script>
+
+</body>
+</html>
